@@ -2,7 +2,7 @@
   <div class="todo-list">
     <item-input
       :selected="selected"
-      @add-item="item => { list.push(item) }"
+      @add-item="addItem"
     />
 
     <item-list
@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive, createComponent, toRefs } from '@vue/composition-api'
+import { ref, reactive, createComponent, toRefs, watch } from '@vue/composition-api'
 import ItemInput from '../components/item-input.vue'
 import ItemList from '../components/item-list.vue'
 import { TodoItem } from '../index'
@@ -46,12 +46,12 @@ export default createComponent({
 
   setup (props, context) {
     const selected = ref(null)
-    let list = [
-      {
+    let list = reactive([
+      reactive({
         id: 1,
         content: '计划内容、干什么事情',
-        status: 1
-      },
+        status: ref(1)
+      }),
       {
         id: 2,
         content: '代码是写给人看的',
@@ -62,7 +62,8 @@ export default createComponent({
         content: '脖子更酸了',
         status: 0
       }
-    ].map(item => reactive(item))
+    ])
+    // .map(item => reactive(item))
     const delItem = (item: TodoItem) => {
       const index = list.findIndex(x => x.id === item.id)
       if (index > -1) {
@@ -73,11 +74,33 @@ export default createComponent({
       arrayMove(list, nI, oI)
     }
 
+    watch(() => {
+      console.log('====', list[0])
+    })
+
+    watch (selected, (val) => {
+      console.log(val)
+    })
+
+    setTimeout(() => {
+      list[0] = reactive({
+        id: 11,
+        content: '计划内容、干什么事情',
+        status: ref(1)
+      })
+      console.log('change', list[0].status)
+    }, 1000)
+
+    const addItem = (item: TodoItem) => {
+      list.push(item)
+    }
+
     return {
       selected,
       list,
       delItem,
-      changeIndex
+      changeIndex,
+      addItem
     }
   },
 
