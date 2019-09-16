@@ -2,7 +2,7 @@
   <div class="todo-list__input">
     <input
       type="text"
-      placeholder="请输入"
+      placeholder="请输入，回车"
       v-model="inputValue"
       @keyup.enter="addItem"
     >

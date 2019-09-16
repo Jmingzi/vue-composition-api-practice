@@ -43,61 +43,58 @@ export default createComponent({
     ItemInput,
     ItemList
   },
+  // watch: {
+  //   list: {
+  //     handler (val) {
+  //       console.log(val)
+  //     }
+  //     // deep: true
+  //   }
+  // },
 
   setup (props, context) {
-    const selected = ref(null)
-    let list = reactive([
-      reactive({
-        id: 1,
-        content: '计划内容、干什么事情',
-        status: ref(1)
-      }),
-      {
-        id: 2,
-        content: '代码是写给人看的',
-        status: 0
-      },
-      {
-        id: 3,
-        content: '脖子更酸了',
-        status: 0
-      }
-    ])
-    // .map(item => reactive(item))
+    // console.log(context)
+    // const selected = ref(null)
+    const data = reactive({
+      selected: null,
+      list: [
+        {
+          id: 1,
+          content: '计划内容、干什么事情',
+          status: 1
+        },
+        {
+          id: 2,
+          content: '代码是写给人看的',
+          status: 0
+        },
+        {
+          id: 3,
+          content: '脖子更酸了',
+          status: 0
+        }
+      ]
+    })
     const delItem = (item: TodoItem) => {
-      const index = list.findIndex(x => x.id === item.id)
+      const index = data.list.findIndex(x => x.id === item.id)
       if (index > -1) {
-        list.splice(index, 1)
+        data.list.splice(index, 1)
       }
     }
     const changeIndex = (nI: number, oI: number) => {
-      arrayMove(list, nI, oI)
+      arrayMove(data.list, nI, oI)
     }
 
-    watch(() => {
-      console.log('====', list[0])
-    })
-
-    watch (selected, (val) => {
-      console.log(val)
-    })
-
-    setTimeout(() => {
-      list[0] = reactive({
-        id: 11,
-        content: '计划内容、干什么事情',
-        status: ref(1)
-      })
-      console.log('change', list[0].status)
-    }, 1000)
+    watch(() => data.list, () => {
+      console.log('====变化了')
+    }, { lazy: true })
 
     const addItem = (item: TodoItem) => {
-      list.push(item)
+      data.list.push(item)
     }
 
     return {
-      selected,
-      list,
+      ...toRefs(data),
       delItem,
       changeIndex,
       addItem
